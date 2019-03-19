@@ -29,7 +29,7 @@
 
 
 const char MS1[] = "\r\n\nCECS-525 RPI Tiny OS";
-const char MS2[] = "\r\nby Eugene Rockey Copyright 2013 All Rights Reserved";
+const char MS2[] = "\r\nby Eugene Rockey Copyright 2013 All Rights Reserfped";
 const char MS3[] = "\r\nReady: ";
 const char MS4[] = "\r\nInvalid Command Try Again...";
 const char GPUDATAERROR[] = "\r\nSystem Error: Invalid GPU Data";
@@ -43,6 +43,22 @@ extern int subtraction(int sub1, int sub2);
 extern int multiplication(int mul1, int mul2);
 extern int division(int div1, int div2);
 extern int remaind(int rem1, int rem2);
+
+extern float32 vfp11_add(float32 add1, float32 add2);
+
+void toString_hex(uint32_t num, char* numArray) {
+    uint32_t temp;
+    numArray[0] = '0';
+    numArray[1] = 'x';
+
+    for (int i=9;i>=2;i--) {
+        temp = 0xF & num;
+        num = num >> 4;
+        if (temp >=0 && temp <=9) {numArray[i] = temp + 48;}
+        else {numArray[i] = temp + 55;}
+    }
+}
+
 
 //PWM Data for Alarm Tone
 uint32_t N[200] = {0,1,2,3,4,5,6,7,8,9,10,11,12,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,
@@ -436,6 +452,78 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
     //Engineer the VFP11 math coprocessor application here.
     //Send a menu to hyperterminal as was done with the minimal computer
     //FADD, FSUB, FMUL, and FDIV, and any other functions you wish to implement in ARM assembly routines.
+    char operator[1];
+	const char calcmsg1[] = "\n\rSelect an Operator (+,-,*,/,(e)xit): \0";
+	const char calcmsg2[] = "\n\rEnter first Operand: \0";
+	const char calcmsg3[] = "\n\rEnter second Operand: \0";
+	const char calcmsg4[] = "\n\rYour answer is: \0";
+	const char calcmsg5[] = " with a remainder of \0";
+	const char calcmsg6[] = "\n\rOperator error. Please try again.\0";
+	float32 operand1;
+	char opstring1[30];
+	float32 operand2;
+	char opstring2[30];
+	float32 output = 0;
+	char outputstring[30];
+	
+	while (1) {		
+		//printf("Select an Operator (+,-,*,/,(e)xit): ");
+		uart_puts(calcmsg1);
+	
+		//scanf("%c", operator[1]);
+		operator[0] = buff_readc();
+		//buff_readline(operator, 1);
+	
+		if (operator[0] != 'e') {
+			//printf("\nEnter first Operand: ");
+			uart_puts(calcmsg2);
+	
+			//scanf("%d", operand1);
+			buff_readline(opstring1, 30);
+			operand1 = ASCII_to_float32(opstring1);
+	
+			//printf("\nEnter second Operand: ");
+			uart_puts(calcmsg3);
+	
+			//scanf("%d", operand2);
+			buff_readline(opstring2, 30);
+			operand2 = ASCII_to_float32(opstring2);
+		} else {
+			return 0;
+		}	
+		
+		output = 0;
+
+		switch(operator[0]) {
+			case '+':
+				output = vfp11_add(operand1, operand2);
+				break;
+			/*case '-':
+				output = subtraction(operand1, operand2);
+				break;
+			case '*':
+				output = multiplication(operand1, operand2);				
+				break;
+			case '/':
+				output = division(operand1, operand2);
+				rem = remaind(operand1, operand2);
+				break;	*/
+			default:
+				//printf("\nOperator error. Please try again.");
+				uart_puts(calcmsg6);
+				break;
+		}
+	
+
+		toString_hex(output, outputstring);
+		//printf("Your answer is %d", output);
+		uart_puts(calcmsg4);
+		uart_putString(outputstring, 30);
+
+	}
+
+	
+	return 0;
 }
 
 void command(void)
