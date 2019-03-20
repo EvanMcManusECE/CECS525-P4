@@ -477,10 +477,17 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
 		if (operator[0] != 'e') {
 			//printf("\nEnter first Operand: ");
 			uart_puts(calcmsg2);
-	
 			//scanf("%d", operand1);
 			buff_readline(opstring1, 30);
-			operand1 = ASCII_to_float32(opstring1);
+			
+			uart_puts("\nYou input:\0");
+			uart_putString(opstring1, 30);
+				
+			operand1 = ASCII_to_float32(teststring);
+			
+			uart_puts("\nYour value in hex:\0");
+			toString_hex(operand1, outputstring);
+			uart_putString(outputstring, 30);
 	
 			//printf("\nEnter second Operand: ");
 			uart_puts(calcmsg3);
@@ -488,8 +495,11 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
 			//scanf("%d", operand2);
 			buff_readline(opstring2, 30);
 			operand2 = ASCII_to_float32(opstring2);
+			uart_puts("\nYour value in hex:\0");
+			toString_hex(operand2, outputstring);
+			uart_putString(outputstring, 30);
 		} else {
-			return 0;
+			return;
 		}	
 		
 		output = 0;
@@ -498,16 +508,15 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
 			case '+':
 				output = vfp11_add(operand1, operand2);
 				break;
-			/*case '-':
-				output = subtraction(operand1, operand2);
+			case '-':
+				output = vfp11_sub(operand1, operand2);
 				break;
 			case '*':
-				output = multiplication(operand1, operand2);				
+				output = vfp11_mul(operand1, operand2);				
 				break;
 			case '/':
-				output = division(operand1, operand2);
-				rem = remaind(operand1, operand2);
-				break;	*/
+				output = vfp11_div(operand1, operand2);
+				break;	
 			default:
 				//printf("\nOperator error. Please try again.");
 				uart_puts(calcmsg6);
@@ -521,9 +530,6 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
 		uart_putString(outputstring, 30);
 
 	}
-
-	
-	return 0;
 }
 
 void command(void)
