@@ -1,3 +1,7 @@
+#include <stdbool.h>
+#include <stdint.h>
+#include <assert.h>
+#include <math.h>
 
 typedef struct float_d {
     bool s;

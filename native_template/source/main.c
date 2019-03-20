@@ -50,20 +50,6 @@ extern float32 vfp11_sub(float32 add1, float32 add2);
 extern float32 vfp11_mul(float32 add1, float32 add2);
 extern float32 vfp11_div(float32 add1, float32 add2);
 
-void toString_hex(uint32_t num, char* numArray) {
-    uint32_t temp;
-    numArray[0] = '0';
-    numArray[1] = 'x';
-
-    for (int i=9;i>=2;i--) {
-        temp = 0xF & num;
-        num = num >> 4;
-        if (temp >=0 && temp <=9) {numArray[i] = temp + 48;}
-        else {numArray[i] = temp + 55;}
-    }
-}
-
-
 //PWM Data for Alarm Tone
 uint32_t N[200] = {0,1,2,3,4,5,6,7,8,9,10,11,12,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,
 				36,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,60,61,62,63,64,65,66,67,68,69,
@@ -532,10 +518,11 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
 		uart_puts(calcmsg4);
 //
         float_d fd = f2d(output);
-        toString(fd.m,outputstring)
+        if (fd.s) {uart_putc('-');}
+        toString(fd.m,outputstring);
         uart_putString(outputstring, 30);
         uart_putc('E');
-        toString(fd.e,outputstring)
+        toString(fd.e,outputstring);
         uart_putString(outputstring, 30);
 //
 		uart_puts(" => hex:\0");

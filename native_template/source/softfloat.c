@@ -36,7 +36,6 @@
 */
 
 #include "softfloat.h"
-#include "f2d.h"
 
 /*----------------------------------------------------------------------------
  | Returns 1 if the single-precision floating-point value `a' is a signaling
