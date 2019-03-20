@@ -45,6 +45,9 @@ extern int division(int div1, int div2);
 extern int remaind(int rem1, int rem2);
 
 extern float32 vfp11_add(float32 add1, float32 add2);
+extern float32 vfp11_sub(float32 add1, float32 add2);
+extern float32 vfp11_mul(float32 add1, float32 add2);
+extern float32 vfp11_div(float32 add1, float32 add2);
 
 void toString_hex(uint32_t num, char* numArray) {
     uint32_t temp;
@@ -483,7 +486,7 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
 			uart_puts("\nYou input:\0");
 			uart_putString(opstring1, 30);
 				
-			operand1 = ASCII_to_float32(teststring);
+			operand1 = ASCII_to_float32(opstring1);
 			
 			uart_puts("\nYour value in hex:\0");
 			toString_hex(operand1, outputstring);
