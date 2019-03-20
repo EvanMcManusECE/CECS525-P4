@@ -145,7 +145,7 @@ vfp11_sub:
 .global vfp11_mul
 vfp11_mul:
 		FMSRR	{s1, s2}, r0, r1
-		FMUL	s2, s2, s1	
+		FMULS	s2, s2, s1	
 		FMRS	r0, s2
 		MOV	pc, lr
 
