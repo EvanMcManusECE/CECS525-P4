@@ -49,6 +49,7 @@ extern float32 vfp11_add(float32 op1, float32 op2);
 extern float32 vfp11_sub(float32 op1, float32 op2);
 extern float32 vfp11_mul(float32 op1, float32 op2);
 extern float32 vfp11_div(float32 op1, float32 op2);
+extern float32 vfp11_sqrt(float32 operand1);
 
 //PWM Data for Alarm Tone
 uint32_t N[200] = {0,1,2,3,4,5,6,7,8,9,10,11,12,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,
@@ -443,7 +444,7 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
     //Send a menu to hyperterminal as was done with the minimal computer
     //FADD, FSUB, FMUL, and FDIV, and any other functions you wish to implement in ARM assembly routines.
     char operator[1];
-	const char calcmsg1[] = "\n\rSelect an Operator (+,-,*,/,(s)phere,(e)xit): \0";
+	const char calcmsg1[] = "\n\rSelect an Operator (+,-,*,/,(s)qrt,(v)olumeSphere,(e)xit): \0";
 	const char calcmsg2[] = "\n\rEnter first Operand: \0";
 	const char calcmsg3[] = "\n\rEnter second Operand: \0";
 	const char calcmsg4[] = "\n\rYour answer is: \0";
@@ -471,7 +472,7 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
 			if (opstring[0] == 'p') {operand1=output;}
 			else {operand1 = ASCII_to_float32(opstring);}
 			
-			if (operator[0] != 's') {
+			if (operator[0] != 'v' && operator[0] != 's') {
 				//printf("\nEnter second Operand: ");
 				uart_puts(calcmsg3);
 				//scanf("%d", operand2);
@@ -499,6 +500,9 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
 				output = vfp11_div(operand1, operand2);
 				break;
 			case 's':
+				output = vfp11_sqrt(operand1);
+				break;
+			case 'v':
 				output = vfp11_mul(operand1, operand1);
 				output = vfp11_mul(operand1, output);
 				output = vfp11_mul(output, 0x40860a92);
