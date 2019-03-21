@@ -156,15 +156,6 @@ vfp11_div:
 		FMRS	r0, s2
 		MOV	pc, lr
 
-.global vfp11_sph
-vfp11_sph:
-		FMSR	s1, r0
-		FMULS	s2, s1, s1
-		FMULS	s2, s2, s1
-		FMULS	s2, s2, #0x40860A92	//Pi*(4/3), might not work
-		FMRS	r0, s2
-		MOV	pc, lr
-
 		
 .global addition
 .global subtraction

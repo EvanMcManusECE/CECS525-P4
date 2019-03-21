@@ -210,6 +210,20 @@ float_d f2d(float32 f) {
     bool ushift = (m != 0) || (e <= 1);
 
     //Check NaN, +-0, +-inf
+    if (e == 0 && m == 0) {					//0
+		fd.m = 0;
+		fd.e = 0;
+		return fd;
+	} else if ((e == 0xFF) && (m != 0)) {	//NaN
+		fd.s = 0;
+		fd.m = 0;
+		fd.e = 0x80000000;
+		return fd;
+	} else if (e == 0xFF) {					//-inf
+		fd.m = 0;
+		fd.e = 0x7FFFFFFF;
+		return fd;
+	} 
 
     if (e == 0) {
         e2 = -149 - 2 ;

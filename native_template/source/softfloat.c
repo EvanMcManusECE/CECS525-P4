@@ -575,7 +575,7 @@ float32 ASCII_to_float32(char* in) //Copyright 2014 Eugene Rockey
 		index++;
 	}
 	
-	while (in[index] != '.') 
+	while (in[index] != '.' && in[index] != 0) 
 	{
 		integer = (integer + (in[index] - 48)) * 10;
 		index ++;

@@ -49,7 +49,6 @@ extern float32 vfp11_add(float32 op1, float32 op2);
 extern float32 vfp11_sub(float32 op1, float32 op2);
 extern float32 vfp11_mul(float32 op1, float32 op2);
 extern float32 vfp11_div(float32 op1, float32 op2);
-extern float32 vfp11_sph(float32 op1);
 
 //PWM Data for Alarm Tone
 uint32_t N[200] = {0,1,2,3,4,5,6,7,8,9,10,11,12,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,
@@ -450,15 +449,14 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
 	const char calcmsg4[] = "\n\rYour answer is: \0";
 	const char calcmsg5[] = " with a remainder of \0";
 	const char calcmsg6[] = "\n\rOperator error. Please try again.\0";
+	char opstring[30];
 	float32 operand1;
-	char opstring1[30];
 	float32 operand2;
-	char opstring2[30];
 	float32 output = 0;
 	char outputstring[30];
 	
 	while (1) {		
-		//printf("Select an Operator (+,-,*,/,(e)xit): ");
+		//printf("Select an Operator (+,-,*,/,(s)phere,(e)xit): ");
 		uart_puts(calcmsg1);
 	
 		//scanf("%c", operator[1]);
@@ -469,27 +467,18 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
 			//printf("\nEnter first Operand: ");
 			uart_puts(calcmsg2);
 			//scanf("%d", operand1);
-			buff_readline(opstring1, 30);			
-			operand1 = ASCII_to_float32(opstring1);
-
-			uart_puts("\n\rYour input:\0");
-			uart_putString(opstring1, 30);
-			uart_puts(" => hex:\0");
-			toString_hex(operand1, outputstring);
-			uart_putString(outputstring, 30);
-	
-			//printf("\nEnter second Operand: ");
-			uart_puts(calcmsg3);
-	
-			//scanf("%d", operand2);
-			buff_readline(opstring2, 30);
-			operand2 = ASCII_to_float32(opstring2);
+			buff_readline(opstring, 30);
+			if (opstring[0] == 'p') {operand1=output;}
+			else {operand1 = ASCII_to_float32(opstring);}
 			
-            uart_puts("\n\rYour input:\0");
-			uart_putString(opstring2, 30);
-			uart_puts(" => hex:\0");
-			toString_hex(operand2, outputstring);
-			uart_putString(outputstring, 30);
+			if (operator[0] != 's') {
+				//printf("\nEnter second Operand: ");
+				uart_puts(calcmsg3);
+				//scanf("%d", operand2);
+				buff_readline(opstring, 30);
+				if (opstring[0] == 'p') {operand2 = output;}
+				else {operand2 = ASCII_to_float32(opstring);}
+			}
 		} else {
 			return;
 		}	
@@ -510,7 +499,9 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
 				output = vfp11_div(operand1, operand2);
 				break;
 			case 's':
-				output = vfp11_sph(operand1);
+				output = vfp11_mul(operand1, operand1);
+				output = vfp11_mul(operand1, output);
+				output = vfp11_mul(output, 0x40860a92);
 				break;
 			default:
 				//printf("\nOperator error. Please try again.");
@@ -523,11 +514,17 @@ void VFP11(void) //ARM Vector Floating Point Unit Demo, see softfloat.c for some
 //
         float_d fd = f2d(output);
         if (fd.s) {uart_putc('-');}
-        toString(fd.m,outputstring);
-        uart_putString(outputstring, 30);
-        uart_putc('E');
-        toString(fd.e,outputstring);
-        uart_putString(outputstring, 30);
+		
+		if (fd.m == 0 && fd.e == 0) {uart_putc('0');}
+		else if (fd.e == 0x7FFFFFFF) {uart_puts("Infinity\0");}
+		else if (fd.e == 0x80000000) {uart_puts("NaN\0");}
+		else {
+			toString(fd.m,outputstring);
+			uart_putString(outputstring, 30);
+			uart_putc('E');
+			toString(fd.e,outputstring);
+			uart_putString(outputstring, 30);
+		}
 //
 		uart_puts(" => hex:\0");
         toString_hex(output, outputstring);
