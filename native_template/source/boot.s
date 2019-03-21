@@ -138,7 +138,7 @@ vfp11_add:
 .global vfp11_sub
 vfp11_sub:
 		FMSRR	{s1, s2}, r0, r1
-		FSUBS	s2, s2, s1	
+		FSUBS	s2, s1, s2	
 		FMRS	r0, s2
 		MOV	pc, lr
 
@@ -152,11 +152,18 @@ vfp11_mul:
 .global vfp11_div
 vfp11_div:
 		FMSRR	{s1, s2}, r0, r1
-		FADDS	s2, s2, s1	
+		FDIVS	s2, s1, s2	
 		FMRS	r0, s2
 		MOV	pc, lr
 
-
+.global vfp11_sph
+vfp11_sph:
+		FMSR	s1, r0
+		FMULS	s2, s1, s1
+		FMULS	s2, s2, s1
+		FMULS	s2, s2, #0x40860A92	//Pi*(4/3), might not work
+		FMRS	r0, s2
+		MOV	pc, lr
 
 		
 .global addition
